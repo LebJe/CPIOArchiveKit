@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CPIOArchiveKit - Checksum</title>
+    <link rel="stylesheet" type="text/css" href="https://lebje.github.io/CPIOArchiveKit/all.css" media="all" />
+</head>
+<body>
+    <header>
+        <a href="https://lebje.github.io/CPIOArchiveKit/">
+            <strong>
+                CPIOArchiveKit
+            </strong>
+            <span>Documentation</span>
+        </a>
+        <sup>Beta</sup>
+    </header>
+
+    <!--
+    <form class="search">
+        <input type="search" placeholder="Search" />
+    </form>
+    -->
+
+    <nav>
+        <div class="wrapper">
+            <h2>On This Page</h2>
+            <ol><li><a href="#initializers">Initializers</a><ul><li class="initializer"><a href="#checksum.init(bytes:)">init(bytes:​)</a></li><li class="initializer"><a href="#checksum.init(sum:)">init(sum:​)</a></li></ul></li><li><a href="#properties">Properties</a><ul><li class="variable"><a href="#checksum.sum">sum</a></li></ul></li></ol>
+        </div>
+    </nav>
+
+    <main>
+        <article>
+            <h1>
+    <small>Structure</small>
+    <code class="name">Checksum</code>
+</h1>
+
+<div class="declaration">
+<pre class="highlight"><code><span class="keyword">public</span> <span class="keyword">struct</span> <span class="type">Checksum</span> </code></pre>
+</div>
+<div class="summary" role="doc-abstract">
+    <p>Checksum is the sum of all bytes in the file data.
+This sum is computed treating all bytes as unsigned values and using unsigned arithmetic.
+Only the least-significant 32 bits of the sum are stored.
+(From <a href="https://github.com/cavaliercoder/go-cpio/blob/925f9528c45e5b74f52963bd11f1988ad99a95a5/header.go#L60">go-cpio's documentation</a>).</p>
+
+</div>
+<div class="discussion">
+    <p>Use <code>Checksum.init(bytes:)</code> to compute the checksum of a file you will add to the archive.</p>
+
+</div>
+
+    <section id="initializers">
+        <h2>Initializers</h2>
+
+        <div role="article" class="initializer" id="checksum.init(bytes:)">
+    <h3>
+        <code>init(bytes:​)</code>
+    </h3>
+    <div class="declaration">
+<pre class="highlight"><code><span class="keyword">public</span> <span class="keyword">init</span>(<span class="variable">bytes</span>: [<span class="type">UInt8</span>]) </code></pre>
+</div>
+<div class="summary" role="doc-abstract">
+    <p>Compute the checksum of <code>bytes</code>.</p>
+
+</div>
+</div>
+<div role="article" class="initializer" id="checksum.init(sum:)">
+    <h3>
+        <code>init(sum:​)</code>
+    </h3>
+    <div class="declaration">
+<pre class="highlight"><code><span class="keyword">public</span> <span class="keyword">init</span>(<span class="variable">sum</span>: <span class="type">Int</span>) </code></pre>
+</div>
+<div class="summary" role="doc-abstract">
+    <p>Set <code>self.sum</code> to a pre-computed checksum.</p>
+
+</div>
+</div>
+    </section>
+    <section id="properties">
+        <h2>Properties</h2>
+
+        <div role="article" class="variable" id="checksum.sum">
+    <h3>
+        <code>sum</code>
+    </h3>
+    <div class="declaration">
+<pre class="highlight"><code><span class="keyword">public</span> <span class="keyword">var</span> <span class="variable">sum</span>: <span class="type">Int</span> = <span class="number literal">0</span></code></pre>
+</div>
+<div class="summary" role="doc-abstract">
+    <p>The sum of all the bytes in the file.</p>
+
+</div>
+</div>
+    </section>
+
+
+
+        </article>
+    </main>
+
+    <footer>
+        <p>
+    Generated on <time datetime="2021-05-17T01:47:28+0000">May 17, 2021</time> using <a href="https://github.com/SwiftDocOrg/swift-doc">swift-doc</a> <span class="version">1.0.0-beta.6</span>.
+</p>
+    </footer>
+</body>
+</html>

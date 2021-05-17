@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CPIOArchiveKit - CPIOArchiveKit</title>
+    <link rel="stylesheet" type="text/css" href="https://lebje.github.io/CPIOArchiveKit/all.css" media="all" />
+</head>
+<body>
+    <header>
+        <a href="https://lebje.github.io/CPIOArchiveKit/">
+            <strong>
+                CPIOArchiveKit
+            </strong>
+            <span>Documentation</span>
+        </a>
+        <sup>Beta</sup>
+    </header>
+
+    <!--
+    <form class="search">
+        <input type="search" placeholder="Search" />
+    </form>
+    -->
+
+    <nav>
+        <div class="wrapper">
+            <h2>On This Page</h2>
+            <ol><li><a href="#structures">Structures</a></li><li><a href="#enumerations">Enumerations</a></li><li><a href="#operators">Operators</a></li><li><a href="#extensions">Extensions</a></li></ol>
+        </div>
+    </nav>
+
+    <main>
+        <article>
+                <section id="structures">
+        <h2>Structures</h2>
+        <dl>
+            <dt class="structure">
+    <a href="https://lebje.github.io/CPIOArchiveKit/CPIOArchiveReader" title="structure - CPIOArchiveReader">
+        CPIOArchive​Reader
+    </a>
+</dt>
+<dd>
+    <p><code>CPIOArchiveReader</code> reads <code>cpio</code> files.</p>
+
+</dd>
+<dt class="structure">
+    <a href="https://lebje.github.io/CPIOArchiveKit/CPIOArchiveWriter" title="structure - CPIOArchiveWriter">
+        CPIOArchive​Writer
+    </a>
+</dt>
+<dd>
+    <p><code>CPIOArchiveWriter</code> creates <code>cpio</code> archives.</p>
+
+</dd>
+<dt class="structure">
+    <a href="https://lebje.github.io/CPIOArchiveKit/Checksum" title="structure - Checksum">
+        Checksum
+    </a>
+</dt>
+<dd>
+    <p>Checksum is the sum of all bytes in the file data.
+This sum is computed treating all bytes as unsigned values and using unsigned arithmetic.
+Only the least-significant 32 bits of the sum are stored.
+(From <a href="https://github.com/cavaliercoder/go-cpio/blob/925f9528c45e5b74f52963bd11f1988ad99a95a5/header.go#L60">go-cpio's documentation</a>).</p>
+
+</dd>
+<dt class="structure">
+    <a href="https://lebje.github.io/CPIOArchiveKit/FileMode" title="structure - FileMode">
+        File​Mode
+    </a>
+</dt>
+<dd>
+    <p>A <code>FileMode</code> contains a file's permissions and file type.</p>
+
+</dd>
+<dt class="structure">
+    <a href="https://lebje.github.io/CPIOArchiveKit/Header" title="structure - Header">
+        Header
+    </a>
+</dt>
+<dd>
+    <p>The <code>cpio</code> header.</p>
+
+</dd>
+        </dl>
+    </section>
+    <section id="enumerations">
+        <h2>Enumerations</h2>
+        <dl>
+            <dt class="enumeration">
+    <a href="https://lebje.github.io/CPIOArchiveKit/CPIOArchiveType" title="enumeration - CPIOArchiveType">
+        CPIOArchive​Type
+    </a>
+</dt>
+<dd>
+    <p>The type of CPIO archive you would like to write or read.</p>
+
+</dd>
+<dt class="enumeration">
+    <a href="https://lebje.github.io/CPIOArchiveKit/CPIOArchiveError" title="enumeration - CPIOArchiveError">
+        CPIOArchive​Error
+    </a>
+</dt>
+<dd>
+    <p>Errors that may occur while writing or reading CPIO archives.</p>
+
+</dd>
+<dt class="enumeration">
+    <a href="https://lebje.github.io/CPIOArchiveKit/FileType" title="enumeration - FileType">
+        File​Type
+    </a>
+</dt>
+<dd>
+    <p><code>FileType</code> specifies the type of file in an archive.</p>
+
+</dd>
+        </dl>
+    </section>
+    <section id="operators">
+        <h2>Operators</h2>
+        <dl>
+            <dt class="operator">
+    <a href="https://lebje.github.io/CPIOArchiveKit/&%5E" title="operator - &^">
+        &amp;^
+    </a>
+</dt>
+<dd>
+    
+</dd>
+        </dl>
+    </section>
+<section id="extensions">
+    <h2>Extensions</h2>
+    <dl>
+    <dt class="extension">
+    <a href="https://lebje.github.io/CPIOArchiveKit/String">String</a>
+</dt>
+<dd></dd>
+    </dl>
+<section>
+        </article>
+    </main>
+
+    <footer>
+        <p>
+    Generated on <time datetime="2021-05-17T01:47:28+0000">May 17, 2021</time> using <a href="https://github.com/SwiftDocOrg/swift-doc">swift-doc</a> <span class="version">1.0.0-beta.6</span>.
+</p>
+    </footer>
+</body>
+</html>
