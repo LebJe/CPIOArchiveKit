@@ -4,7 +4,13 @@ import PackageDescription
 
 let package = Package(
 	name: "CPIOArchiveKit",
-	products: [
+	platforms: [
+		.macOS(.v10_15),
+		.iOS(.v13),
+		.tvOS(.v12),
+		.watchOS(.v7)
+	]
+	,products: [
 		.library(
 			name: "CPIOArchiveKit",
 			targets: ["CPIOArchiveKit"]
