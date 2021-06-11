@@ -7,7 +7,7 @@
 /// `FileType` specifies the type of file in an archive.
 ///
 /// Documentation comments are taken from [FreeBSD's man pages](https://www.freebsd.org/cgi/man.cgi?query=cpio&sektion=5&manpath=FreeBSD+13.0-current).
-public enum FileType: UInt32 {
+public enum FileType: UInt32, Codable, Equatable {
 	/// SUID bit.
 	case setUID = 0o4000
 

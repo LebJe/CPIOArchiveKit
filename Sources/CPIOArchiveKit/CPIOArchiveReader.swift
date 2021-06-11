@@ -22,6 +22,9 @@ public struct CPIOArchiveReader {
 	///
 	public var headers: [Header] = []
 
+	/// The amount of files in this archive.
+	public var count: Int { self.headers.count }
+
 	/// The initializer reads all the `cpio` headers in preparation for random access to the header's file contents later.
 	///
 	/// - Parameters:
