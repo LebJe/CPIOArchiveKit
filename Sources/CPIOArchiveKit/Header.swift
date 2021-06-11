@@ -8,7 +8,7 @@
 ///
 /// This header is placed directly before the contents of a file in the archive to
 /// provide information such as the size of the file, the file's name, it's permissions, etc.
-public struct Header {
+public struct Header: Codable, Equatable {
 	/// The file's name.
 	public internal(set) var name: String
 
@@ -93,5 +93,104 @@ public struct Header {
 		self.dev = dev
 		self.rDev = rDev
 		self.checksum = checksum
+	}
+
+	public init(from decoder: Decoder) throws {
+		let container = try decoder.container(keyedBy: CodingKeys.self)
+		self.name = try container.decode(String.self, forKey: .name)
+		self.userID = try container.decode(Int.self, forKey: .userID)
+		self.groupID = try container.decode(Int.self, forKey: .groupID)
+		self.mode = FileMode(rawValue: try container.decode(UInt32.self, forKey: .mode))
+		self.modificationTime = try container.decode(Int.self, forKey: .modificationTime)
+		self.inode = try container.decodeIfPresent(Int.self, forKey: .inode)
+		self.links = try container.decode(Int.self, forKey: .links)
+
+		let devContainer = try container.nestedContainer(keyedBy: DevCodingKeys.self, forKey: .dev)
+		self.dev.major = try devContainer.decodeIfPresent(Int.self, forKey: .major)
+		self.dev.minor = try devContainer.decodeIfPresent(Int.self, forKey: .minor)
+
+		let rDevContainer = try container.nestedContainer(keyedBy: DevCodingKeys.self, forKey: .rDev)
+		self.rDev.major = try rDevContainer.decode(Int.self, forKey: .major)
+		self.rDev.minor = try rDevContainer.decode(Int.self, forKey: .minor)
+
+		if let sum = try container.decodeIfPresent(Int.self, forKey: .checksum) {
+			self.checksum = Checksum(sum: sum)
+		}
+	}
+
+	public func encode(to encoder: Encoder) throws {
+		var container = encoder.container(keyedBy: Self.CodingKeys.self)
+
+		if let major = self.dev.major, let minor = self.dev.minor {
+			var devContainer = container.nestedContainer(keyedBy: DevCodingKeys.self, forKey: .dev)
+
+			try devContainer.encode(major, forKey: .major)
+			try devContainer.encode(minor, forKey: .minor)
+		} else {
+			var devContainer = container.nestedContainer(keyedBy: DevCodingKeys.self, forKey: .dev)
+
+			try devContainer.encodeNil(forKey: .major)
+			try devContainer.encodeNil(forKey: .minor)
+		}
+
+		var rDevContainer = container.nestedContainer(keyedBy: DevCodingKeys.self, forKey: .rDev)
+
+		try rDevContainer.encode(self.rDev.major, forKey: .major)
+		try rDevContainer.encode(self.rDev.minor, forKey: .minor)
+
+		try container.encode(self.name, forKey: .name)
+		try container.encode(self.userID, forKey: .userID)
+		try container.encode(self.groupID, forKey: .groupID)
+		try container.encode(self.mode.rawValue, forKey: .mode)
+		try container.encode(self.modificationTime, forKey: .modificationTime)
+		if let inode = inode {
+			try container.encode(inode, forKey: .inode)
+		} else {
+			try container.encodeNil(forKey: .inode)
+		}
+
+		try container.encode(self.links, forKey: .links)
+		if let c = self.checksum {
+			try container.encode(c.sum, forKey: .checksum)
+		} else {
+			try container.encodeNil(forKey: .checksum)
+		}
+	}
+
+	public static func == (lhs: Header, rhs: Header) -> Bool {
+		lhs.name == rhs.name &&
+			lhs.userID == rhs.userID &&
+			lhs.groupID == rhs.groupID &&
+			lhs.mode == rhs.mode &&
+			lhs.modificationTime == rhs.modificationTime &&
+			lhs.inode == rhs.inode &&
+			lhs.links == rhs.links &&
+			lhs.linkName == rhs.linkName &&
+			lhs.dev == rhs.dev &&
+			lhs.rDev == rhs.rDev &&
+			lhs.checksum == rhs.checksum &&
+			lhs.size == rhs.size &&
+			lhs.contentLocation == rhs.contentLocation &&
+			lhs.nameSize == rhs.nameSize &&
+			lhs.startingLocation == rhs.startingLocation &&
+			lhs.endingLocation == rhs.endingLocation
+	}
+
+	enum CodingKeys: String, CodingKey {
+		case name,
+		     userID,
+		     groupID,
+		     mode,
+		     modificationTime,
+		     inode,
+		     links,
+		     checksum,
+		     dev,
+		     rDev
+	}
+
+	enum DevCodingKeys: CodingKey {
+		case major
+		case minor
 	}
 }
