@@ -35,6 +35,7 @@ jobs:
     TestOnUbuntu-20_04-x86_64:
         runs-on: "ubuntu-latest"
         steps:
+            - uses: "actions/checkout@v2"
             - name: "Run tests"
               run: "swift test"
     TestOnWindows10-x86_64:
