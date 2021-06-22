@@ -136,16 +136,25 @@ public struct CPIOArchiveReader {
 	}
 }
 
-extension CPIOArchiveReader: IteratorProtocol, Sequence {
+extension CPIOArchiveReader: Sequence {
+	public func makeIterator() -> CPIOArchiveReaderIterator {
+		CPIOArchiveReaderIterator(archive: self)
+	}
+}
+
+public struct CPIOArchiveReaderIterator: IteratorProtocol {
 	public typealias Element = (Header, [UInt8])
 
+	let archive: CPIOArchiveReader
+	var currentIndex = 0
+
 	public mutating func next() -> Element? {
-		if self.currentIndex > self.headers.count - 1 {
+		if self.currentIndex > self.archive.headers.count - 1 {
 			return nil
 		}
 
-		let bytes = self[self.currentIndex]
-		let h = self.headers[self.currentIndex]
+		let bytes = self.archive[self.currentIndex]
+		let h = self.archive.headers[self.currentIndex]
 		self.currentIndex += 1
 
 		return (h, bytes)
