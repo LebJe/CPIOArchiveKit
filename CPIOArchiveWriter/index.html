@@ -25,7 +25,7 @@
     <nav>
         <div class="wrapper">
             <h2>On This Page</h2>
-            <ol><li><a href="#initializers">Initializers</a><ul><li class="initializer"><a href="#cpioarchivewriter.init(type:)">init(type:​)</a></li></ul></li><li><a href="#properties">Properties</a><ul><li class="variable"><a href="#cpioarchivewriter.bytes">bytes</a></li><li class="variable"><a href="#cpioarchivewriter.archivetype">archive​Type</a></li></ul></li><li><a href="#methods">Methods</a><ul><li class="function"><a href="#cpioarchivewriter.addfile(header:contents:)">add​File(header:​contents:​)</a></li><li class="function"><a href="#cpioarchivewriter.addfile(header:contents:)">add​File(header:​contents:​)</a></li><li class="function"><a href="#cpioarchivewriter.finalize()">finalize()</a></li></ul></li></ol>
+            <ol><li><a href="#initializers">Initializers</a><ul><li class="initializer"><a href="#cpioarchivewriter.init(type:)">init(type:​)</a></li></ul></li><li><a href="#properties">Properties</a><ul><li class="variable"><a href="#cpioarchivewriter.archivetype">archive​Type</a></li></ul></li><li><a href="#methods">Methods</a><ul><li class="function"><a href="#cpioarchivewriter.addfile(header:contents:)">add​File(header:​contents:​)</a></li><li class="function"><a href="#cpioarchivewriter.addfile(header:contents:)">add​File(header:​contents:​)</a></li><li class="function"><a href="#cpioarchivewriter.finalize(clear:)">finalize(clear:​)</a></li></ul></li></ol>
         </div>
     </nav>
 
@@ -42,6 +42,19 @@
 <div class="summary" role="doc-abstract">
     <p><code>CPIOArchiveWriter</code> creates <code>cpio</code> archives.</p>
 
+</div>
+<div class="discussion">
+    <html><body><pre class="highlight"><code><span class="keyword">let</span> <span class="variable">writer</span> = <span class="variable">CPIOArchiveWriter</span>()
+
+<span class="keyword">let</span> <span class="variable">header</span> = <span class="variable">Header</span>(
+	<span class="variable">name</span>: <span class="string literal">"</span><span class="string literal">hello.txt</span><span class="string literal">"</span>,
+	<span class="variable">mode</span>: <a href="https://lebje.github.io/CPIOArchiveKit/FileMode"><span class="type">FileMode</span></a>(<span class="variable">rawValue</span>: <span class="number literal">0o644</span>),
+	<span class="variable">modificationTime</span>: <span class="type">Int</span>(<span class="variable">Date</span>().<span class="variable">timeIntervalSince1970</span>)
+)
+<span class="variable">writer</span>.<span class="variable">addFile</span>(<span class="variable">header</span>: <span class="type">header</span>, <span class="variable">contents</span>: <span class="string literal">"</span><span class="string literal">Hello World!</span><span class="string literal">"</span>)
+<span class="variable">writer</span>.<span class="variable">finalize</span>()
+<span class="comment">// Use `writer.bytes`.</span>
+</code></pre></body></html>
 </div>
 
     <section id="initializers">
@@ -82,24 +95,16 @@
     <section id="properties">
         <h2>Properties</h2>
 
-        <div role="article" class="variable" id="cpioarchivewriter.bytes">
-    <h3>
-        <code><a href="#cpioarchivewriter.bytes">bytes</a></code>
-    </h3>
-    <div class="declaration">
-<pre class="highlight"><code><html><body><span class="keyword">public</span> <span class="keyword">var</span> <span class="variable">bytes</span>: [<span class="type">UInt8</span>] = [] </body></html></code></pre>
-</div>
-<div class="summary" role="doc-abstract">
-    <p>The raw bytes of the archive.</p>
-
-</div>
-</div>
-<div role="article" class="variable" id="cpioarchivewriter.archivetype">
+        <div role="article" class="variable" id="cpioarchivewriter.archivetype">
     <h3>
         <code><a href="#cpioarchivewriter.archivetype">archive​Type</a></code>
     </h3>
     <div class="declaration">
 <pre class="highlight"><code><html><body><span class="keyword">public</span> <span class="keyword">let</span> <span class="variable">archiveType</span>: <a href="https://lebje.github.io/CPIOArchiveKit/CPIOArchiveType"><span class="type">CPIOArchiveType</span></a></body></html></code></pre>
+</div>
+<div class="summary" role="doc-abstract">
+    <p>The type of archive that <code>CPIOArchiveWriter</code> will create.</p>
+
 </div>
 </div>
     </section>
@@ -111,7 +116,7 @@
         <code><a href="#cpioarchivewriter.addfile(header:contents:)">add​File(header:​contents:​)</a></code>
     </h3>
     <div class="declaration">
-<pre class="highlight"><code><html><body><span class="keyword">public</span> <span class="attribute">mutating</span> <span class="keyword">func</span> <span class="function">addFile</span>(<span class="variable">header</span>: <a href="https://lebje.github.io/CPIOArchiveKit/Header"><span class="type">Header</span></a>, <span class="variable">contents</span>: [<span class="type">UInt8</span>])  </body></html></code></pre>
+<pre class="highlight"><code><html><body><span class="keyword">public</span> <span class="attribute">mutating</span> <span class="keyword">func</span> <span class="function">addFile</span>(<span class="variable">header</span>: <a href="https://lebje.github.io/CPIOArchiveKit/Header"><span class="type">Header</span></a>, <span class="variable">contents</span>: [<span class="type">UInt8</span>] = [])  </body></html></code></pre>
 </div>
 <div class="summary" role="doc-abstract">
     <p>Add a file to the archive.</p>
@@ -167,12 +172,16 @@
 
 </div>
 </div>
-<div role="article" class="function" id="cpioarchivewriter.finalize()">
+<div role="article" class="function" id="cpioarchivewriter.finalize(clear:)">
     <h3>
-        <code><a href="#cpioarchivewriter.finalize()">finalize()</a></code>
+        <code><a href="#cpioarchivewriter.finalize(clear:)">finalize(clear:​)</a></code>
     </h3>
     <div class="declaration">
-<pre class="highlight"><code><html><body><span class="keyword">public</span> <span class="attribute">mutating</span> <span class="keyword">func</span> <span class="function">finalize</span>()  </body></html></code></pre>
+<pre class="highlight"><code><html><body><span class="keyword">public</span> <span class="attribute">mutating</span> <span class="keyword">func</span> <span class="function">finalize</span>(<span class="variable">clear</span>: <span class="type">Bool</span> = <span class="keyword">false</span>) -&gt; [<span class="type">UInt8</span>]  </body></html></code></pre>
+</div>
+<div class="summary" role="doc-abstract">
+    <p>Creates the archive and returns the bytes of the archive.</p>
+
 </div>
 </div>
     </section>
@@ -184,7 +193,7 @@
 
     <footer>
         <p>
-    Generated on <time datetime="2021-06-22T15:46:10+0000">June 22, 2021</time> using <a href="https://github.com/SwiftDocOrg/swift-doc">swift-doc</a> <span class="version">1.0.0-rc.1</span>.
+    Generated on <time datetime="2021-07-21T19:52:47+0000">July 21, 2021</time> using <a href="https://github.com/SwiftDocOrg/swift-doc">swift-doc</a> <span class="version">1.0.0-rc.1</span>.
 </p>
     </footer>
 </body>
