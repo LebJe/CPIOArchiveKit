@@ -93,6 +93,7 @@ jobs:
             - name: "Test CreateReadWrite"
               run: |
                   cd Examples/CreateReadWrite
+                  ls
                   swift build
     TestBuildingOnMacOS-11_0-ARM64:
         runs-on: "macos-11.0"
