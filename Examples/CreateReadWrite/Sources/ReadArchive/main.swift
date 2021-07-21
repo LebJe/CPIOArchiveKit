@@ -114,8 +114,6 @@ func parseArgs() {
 	}
 }
 
-parseArgs()
-
 // MARK: - Main Code
 
 func printContents(from bytes: [UInt8]) {
@@ -209,6 +207,7 @@ func description(of mode: FileMode) -> String {
 }
 
 do {
+	parseArgs()
 	try main()
 } catch CPIOArchiveError.invalidHeader {
 	fputs("One of the headers in \"\(CommandLine.arguments[1])\" is invalid.", stderr)

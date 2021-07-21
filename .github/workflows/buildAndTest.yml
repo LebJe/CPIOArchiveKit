@@ -9,32 +9,32 @@ jobs:
             - uses: "actions/checkout@v2"
             - name: "Run tests"
               run: "swift test"
-            - name: "Test CreateReadWrite"
-              run: |
-                  cd Examples/CreateReadWrite
-                  swift build
-                  ./.build/debug/create Package.swift Sources/ Sources/ExtractArchive/ Sources/ExtractArchive/main.swift
-                  ./.build/debug/read output.cpio
-                  mkdir outputCPIOExtractFolder
-                  cd outputCPIOExtractFolder
-                  ./../.build/debug/extract ../output.cpio
-                  ls -lahR
+            # - name: "Test CreateReadWrite"
+            #   run: |
+            #       cd Examples/CreateReadWrite
+            #       swift build
+            #       ./.build/debug/create Package.swift Sources/ Sources/ExtractArchive/ Sources/ExtractArchive/main.swift
+            #       ./.build/debug/read output.cpio
+            #       mkdir outputCPIOExtractFolder
+            #       cd outputCPIOExtractFolder
+            #       ./../.build/debug/extract ../output.cpio
+            #       ls -lahR
     TestOnMacOS-11_0-x86_64:
         runs-on: "macos-11.0"
         steps:
             - uses: "actions/checkout@v2"
             - name: "Run tests"
               run: "swift test"
-            - name: "Test CreateReadWrite"
-              run: |
-                  cd Examples/CreateReadWrite
-                  swift build
-                  ./.build/debug/create Package.swift Sources/ Sources/ExtractArchive/ Sources/ExtractArchive/main.swift
-                  ./.build/debug/read output.cpio
-                  mkdir outputCPIOExtractFolder
-                  cd outputCPIOExtractFolder
-                  ./../.build/debug/extract ../output.cpio
-                  ls -lahR
+            # - name: "Test CreateReadWrite"
+            #   run: |
+            #       cd Examples/CreateReadWrite
+            #       swift build
+            #       ./.build/debug/create Package.swift Sources/ Sources/ExtractArchive/ Sources/ExtractArchive/main.swift
+            #       ./.build/debug/read output.cpio
+            #       mkdir outputCPIOExtractFolder
+            #       cd outputCPIOExtractFolder
+            #       ./../.build/debug/extract ../output.cpio
+            #       ls -lahR
     # TestOnUbuntu-20_04-ARM:
     #   runs-on: ubuntu-latest
     #   steps:
@@ -90,11 +90,11 @@ jobs:
                   copy "%SDKROOT%\usr\share\winsdk.modulemap" "%UniversalCRTSdkDir%\Include\%UCRTVersion%\um\module.modulemap"
             - name: "Build"
               run: "swift build"
-            - name: "Test CreateReadWrite"
-              run: |
-                  cd Examples/CreateReadWrite
-                  ls
-                  swift build
+            # - name: "Test CreateReadWrite"
+            #   run: |
+            #       cd Examples/CreateReadWrite
+            #       ls
+            #       swift build
     TestBuildingOnMacOS-11_0-ARM64:
         runs-on: "macos-11.0"
         steps:
