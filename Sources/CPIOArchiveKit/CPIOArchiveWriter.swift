@@ -11,7 +11,7 @@
 ///
 /// let header = Header(
 /// 	name: "hello.txt",
-/// 	mode: FileMode(rawValue: 0o644),
+/// 	mode: FileMode(0o644),
 /// 	modificationTime: Int(Date().timeIntervalSince1970)
 /// )
 /// writer.addFile(header: header, contents: "Hello World!")
