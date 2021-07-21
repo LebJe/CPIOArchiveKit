@@ -7,6 +7,6 @@
 infix operator &^
 
 /// Bitwise AND NOT.
-internal func &^ <T: FixedWidthInteger>(lhs: T, rhs: T) -> T {
-	lhs & (~rhs)
+func &^ <T: FixedWidthInteger>(lhs: T, rhs: T) -> T {
+	lhs & ~rhs
 }

@@ -5,6 +5,13 @@
 //  The full text of the license can be found in the file named LICENSE.
 
 /// `CPIOArchiveReader` reads `cpio` files.
+///
+/// ```swift
+///	let bytes = Array<UInt8>(try Data(contentsOf: myURL))
+/// let reader = try CPIOArchiveReader(archive: bytes)
+/// let bytes = reader[0]
+/// let header = reader.headers[0]
+/// ```
 public struct CPIOArchiveReader {
 	private var data: [UInt8]
 	private var currentIndex: Int = 0
@@ -50,7 +57,7 @@ public struct CPIOArchiveReader {
 
 			h.contentLocation = index
 
-			if h.mode.isSymlink {
+			if h.mode.is(.symlink) {
 				h.linkName = String(self.data[h.contentLocation..<h.contentLocation + h.size])
 			}
 
