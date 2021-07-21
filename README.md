@@ -25,12 +25,15 @@
         -   [Reading Archives](#reading-archives)
             -   [Iteration](#iteration)
             -   [Subscript](#subscript)
+            -   [FileMode](#filemode)
+                -   [File Type](#file-type)
+                -   [Permissions](#permissions)
     -   [Examples](#examples)
     -   [Other Platforms](#other-platforms)
         -   [Windows](#windows)
     -   [Contributing](#contributing)
 
-<!-- Added by: lebje, at: Sun May 16 10:43:16 EDT 2021 -->
+<!-- Added by: lebje, at: Wed Jul 21 10:15:16 EDT 2021 -->
 
 <!--te-->
 
@@ -48,7 +51,7 @@ Add this to the `dependencies` array in `Package.swift`:
 .package(url: "https://github.com/LebJe/CPIOArchiveKit.git", from: "0.0.2")
 ```
 
-. Also add this to the `targets` array in the aforementioned file:
+Also add this to the `targets` array in the aforementioned file:
 
 ```swift
 .product(name: "CPIOArchiveKit", package: "CPIOArchiveKit")
@@ -73,9 +76,17 @@ var time: Int = 1615929568
 let date: Date = ...
 time = Int(date.timeIntervalSince1970)
 
+// File
 let header = Header(
    name: "hello.txt",
-   mode: FileMode(rawValue: 0o644),
+   mode: FileMode(0o644, modes: [.regular]),
+   modificationTime: time
+)
+
+// Directory
+let header = Header(
+   name: "dir/",
+   mode: FileMode(0o644, modes: [.directory]),
    modificationTime: time
 )
 ```
@@ -125,23 +136,22 @@ If you have a text file, use the overloaded version of `addFile`:
 writer.addFile(header: header, contents: "Hello")
 ```
 
-Once you have added your files, you must call `finalize()`:
+> For directories, omit the `contents` parameter in `addFile`. For symlinks, set the `contents` parameter to the file or directory the link points to.
+
+Once you have added your files, you must call `finalize()` to create the archive and return the data:
 
 ```swift
-writer.finalize()
-```
+// The binary representation (Array<UInt8>) of the created archive.
+let bytes = writer.finalize()
 
-Then you can get the bytes of the archive like this:
-
-```swift
-// The binary representation (Array<UInt8>) of the archive.
-let bytes = writer.bytes
-// You convert it to data like this:
+// You convert it to `Data` like this:
 let data = Data(bytes)
 
 // And write it:
 try data.write(to: URL(fileURLWithPath: "myArchive.cpio"))
 ```
+
+if you want to reuse `writer`, call `finalize(clear: true)` instead, which will clear the state inside `writer`.
 
 ### Reading Archives
 
@@ -188,9 +198,30 @@ let header = reader.headers.first(where: { $0.name.contains(".swift") })!
 let data = reader[header: header]
 ```
 
+#### `FileMode`
+
+Once you have retrived a `FileMode` from a `Header` in a `CPIOArchiveReader`, you can access the file's type and UNIX permissions.
+
+#### File Type
+
+```swift
+let type = header.mode.type
+
+switch type {
+	case .regular: // Regular file.
+	case .directory: // Directory.
+	case .symlink: // Symbolic link.
+	...
+}
+```
+
+#### Permissions
+
+To access the UNIX permissions, use the `permissions` variable in `FileMode`.
+
 ## Examples
 
--   `Examples/ReadArchive`: This example shows how to use CPIOArchiveKit to read an archive, or compute a checksum for an archive using only `Darwin.C` (macOS), `Glibc` (Linux) or `ucrt` (Windows (not tested)).
+-   `Examples/CreateReadWrite`: This example shows how to use CPIOArchiveKit to read, create, or extract an archive; or compute a checksum for an archive using only `Darwin.C` (macOS), `Glibc` (Linux) or `ucrt` (Windows (not tested)).
 
 ## Other Platforms
 
@@ -202,7 +233,7 @@ CPIOArchiveKit is currently being built on Windows, but not tested, as the [Swif
 
 ## Contributing
 
-Before committing, please install [pre-commit](https://pre-commit.com), and [swift-format](https://github.com/nicklockwood/SwiftFormat) and install the pre-commit hook:
+Before committing, please install [pre-commit](https://pre-commit.com), [swift-format](https://github.com/nicklockwood/SwiftFormat), and [Prettier](https://prettier.io), then install the pre-commit hook:
 
 ```bash
 $ brew bundle # install the packages specified in Brewfile

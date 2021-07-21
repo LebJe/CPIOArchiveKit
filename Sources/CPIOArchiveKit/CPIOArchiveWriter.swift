@@ -5,13 +5,25 @@
 //  The full text of the license can be found in the file named LICENSE.
 
 /// `CPIOArchiveWriter` creates `cpio` archives.
+///
+/// ```swift
+/// let writer = CPIOArchiveWriter()
+///
+/// let header = Header(
+/// 	name: "hello.txt",
+/// 	mode: FileMode(rawValue: 0o644),
+/// 	modificationTime: Int(Date().timeIntervalSince1970)
+/// )
+/// writer.addFile(header: header, contents: "Hello World!")
+/// writer.finalize()
+/// // Use `writer.bytes`.
+/// ```
 public struct CPIOArchiveWriter {
 	/// The raw bytes of the archive.
-	public var bytes: [UInt8] = []
+	private var bytes: [UInt8] = []
 
+	/// The type of archive that `CPIOArchiveWriter` will create.
 	public let archiveType: CPIOArchiveType
-
-	private var wasFinalized = false
 
 	private var currentInode = 0
 	private var currentDev = (major: 0, minor: 0)
@@ -66,12 +78,14 @@ public struct CPIOArchiveWriter {
 	///
 	/// ### Symlinks
 	/// Add a symlink by setting `header.name` to the name you want the symlink to have, and `contents` to the name of the file you want to link to.
-	public mutating func addFile(header: Header, contents: [UInt8]) {
+	public mutating func addFile(header: Header, contents: [UInt8] = []) {
 		var h = header
 
 		// Regular files should one or more links.
-		h.links = h.links < 1 && h.mode.isRegularFile ? 1 : h.links
+		h.links = h.links < 1 && h.mode.is(.regular) ? 1 : h.links
 
+		// Make sure the file type is set.
+		// From [go-cpio](https://github.com/cavaliercoder/go-cpio/blob/925f9528c45e5b74f52963bd11f1988ad99a95a5/writer.go#L77).
 		if (h.mode.rawValue &^ FileType.permissions.rawValue) == 0 {
 			h.mode.rawValue |= FileType.regular.rawValue
 		}
@@ -80,14 +94,14 @@ public struct CPIOArchiveWriter {
 
 		self.bytes += h.name.utf8Array + [0x00]
 
-		// Pad the end of the filename with zero's
+		// Pad the end of the filename with zeros
 		let namePadding = (4 - ((Constants.headerLength + h.name.count + 1) % 4)) % 4
 
 		self.bytes += Array(Array<UInt8>(repeating: 0, count: 4)[0..<namePadding])
 
 		self.bytes += contents
 
-		// Pad the end of the file with zero's
+		// Pad the end of the file with zeros
 		let filePadding = (4 - (contents.count % 4)) % 4
 
 		self.bytes += Array(Array<UInt8>(repeating: 0, count: 4)[0..<filePadding])
@@ -101,11 +115,17 @@ public struct CPIOArchiveWriter {
 		self.addFile(header: header, contents: contents.utf8Array)
 	}
 
-	public mutating func finalize() {
-		if !self.wasFinalized {
-			self.wasFinalized = true
-		}
+	/// Creates the archive and returns the bytes of the archive.
+	public mutating func finalize(clear: Bool = false) -> [UInt8] {
+		self.addFile(header: self.trailerHeader)
 
-		self.addFile(header: self.trailerHeader, contents: [])
+		if !clear {
+			return self.bytes
+		} else {
+			let b = self.bytes
+			self.bytes = []
+
+			return b
+		}
 	}
 }

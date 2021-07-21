@@ -14,7 +14,7 @@ final class CPIOArchiveKitTests: XCTestCase {
 		writer.addFile(
 			header: Header(
 				name: "hello.txt",
-				mode: FileMode(rawValue: 0o644),
+				mode: FileMode(0o644),
 				modificationTime: 1620311816,
 				links: 1
 			),
@@ -24,7 +24,7 @@ final class CPIOArchiveKitTests: XCTestCase {
 		writer.addFile(
 			header: Header(
 				name: "hello2.txt",
-				mode: FileMode(rawValue: 0o655),
+				mode: FileMode(0o655),
 				modificationTime: 1620311816,
 				links: 1
 			),
@@ -41,16 +41,23 @@ final class CPIOArchiveKitTests: XCTestCase {
 			contents: "hello.txt"
 		)
 
-		writer.finalize()
+		writer.addFile(
+			header: Header(
+				name: "directory/",
+				mode: FileMode(0o644, modes: [.directory]),
+				modificationTime: 1620311816,
+				links: 1
+			)
+		)
 
-		XCTAssertEqual(Data(writer.bytes), try Data(contentsOf: Bundle.module.url(forResource: "test-files/archive", withExtension: "cpio")!))
+		XCTAssertEqual(Data(writer.finalize()), try Data(contentsOf: Bundle.module.url(forResource: "test-files/archive", withExtension: "cpio")!))
 	}
 
 	func testReadArchive() throws {
 		let headers = [
 			Header(
 				name: "hello.txt",
-				mode: FileMode(rawValue: 0o644),
+				mode: FileMode(0o644, modes: [.regular]),
 				modificationTime: 1620311816,
 				inode: 0,
 				links: 1,
@@ -59,7 +66,7 @@ final class CPIOArchiveKitTests: XCTestCase {
 			),
 			Header(
 				name: "hello2.txt",
-				mode: FileMode(rawValue: 0o655),
+				mode: FileMode(0o655, modes: [.regular]),
 				modificationTime: 1620311816,
 				inode: 1,
 				links: 1,
@@ -74,10 +81,19 @@ final class CPIOArchiveKitTests: XCTestCase {
 				links: 1,
 				dev: (major: 2, minor: 2)
 			),
+			Header(
+				name: "directory/",
+				mode: FileMode(0o644, modes: [.directory]),
+				modificationTime: 1620311816,
+				inode: 3,
+				links: 1,
+				dev: (major: 3, minor: 3)
+			),
 		]
 		let reader = try CPIOArchiveReader(archive: Array(Data(contentsOf: Bundle.module.url(forResource: "test-files/archive", withExtension: "cpio")!)))
 
 		XCTAssertEqual(reader.headers[0].name, headers[0].name)
+		XCTAssertEqual(reader.headers[0].mode, headers[0].mode)
 		XCTAssertEqual(reader.headers[0].userID, headers[0].userID)
 		XCTAssertEqual(reader.headers[0].groupID, headers[0].groupID)
 		XCTAssertEqual(reader.headers[0].modificationTime, headers[0].modificationTime)
@@ -89,6 +105,7 @@ final class CPIOArchiveKitTests: XCTestCase {
 		XCTAssertEqual(headers[0].checksum!.sum, Checksum(bytes: reader[0]).sum)
 
 		XCTAssertEqual(reader.headers[1].name, headers[1].name)
+		XCTAssertEqual(reader.headers[1].mode, headers[1].mode)
 		XCTAssertEqual(reader.headers[1].userID, headers[1].userID)
 		XCTAssertEqual(reader.headers[1].groupID, headers[1].groupID)
 		XCTAssertEqual(reader.headers[1].modificationTime, headers[1].modificationTime)
@@ -100,6 +117,7 @@ final class CPIOArchiveKitTests: XCTestCase {
 		XCTAssertEqual(headers[1].checksum!.sum, Checksum(bytes: reader[1]).sum)
 
 		XCTAssertEqual(reader.headers[2].name, headers[2].name)
+		XCTAssertEqual(reader.headers[2].mode, headers[2].mode)
 		XCTAssertEqual(reader.headers[2].userID, headers[2].userID)
 		XCTAssertEqual(reader.headers[2].groupID, headers[2].groupID)
 		XCTAssertEqual(reader.headers[2].modificationTime, headers[2].modificationTime)
@@ -108,6 +126,17 @@ final class CPIOArchiveKitTests: XCTestCase {
 		XCTAssertEqual(reader.headers[2].dev.minor, headers[2].dev.minor)
 		XCTAssertEqual(reader.headers[2].rDev.major, headers[2].rDev.major)
 		XCTAssertEqual(reader.headers[2].rDev.minor, headers[2].rDev.minor)
+
+		XCTAssertEqual(reader.headers[3].name, headers[3].name)
+		XCTAssertEqual(reader.headers[3].mode, headers[3].mode)
+		XCTAssertEqual(reader.headers[3].userID, headers[3].userID)
+		XCTAssertEqual(reader.headers[3].groupID, headers[3].groupID)
+		XCTAssertEqual(reader.headers[3].modificationTime, headers[3].modificationTime)
+		XCTAssertEqual(reader.headers[3].inode, headers[3].inode)
+		XCTAssertEqual(reader.headers[3].dev.major, headers[3].dev.major)
+		XCTAssertEqual(reader.headers[3].dev.minor, headers[3].dev.minor)
+		XCTAssertEqual(reader.headers[3].rDev.major, headers[3].rDev.major)
+		XCTAssertEqual(reader.headers[3].rDev.minor, headers[3].rDev.minor)
 	}
 
 	func testReadBIGArchive() throws {
@@ -115,7 +144,7 @@ final class CPIOArchiveKitTests: XCTestCase {
 			name: "large.txt",
 			userID: 0,
 			groupID: 0,
-			mode: FileMode(rawValue: 0o100644),
+			mode: FileMode(0o644, modes: [.regular]),
 			modificationTime: 1621215500,
 			inode: 32430807,
 			links: 1,
@@ -125,6 +154,7 @@ final class CPIOArchiveKitTests: XCTestCase {
 		let reader = try CPIOArchiveReader(archive: Array(Data(contentsOf: Bundle.module.url(forResource: "test-files/big", withExtension: "cpio")!)))
 
 		XCTAssertEqual(reader.headers[0].name, header.name)
+		XCTAssertEqual(reader.headers[0].mode, header.mode)
 		XCTAssertEqual(reader.headers[0].userID, header.userID)
 		XCTAssertEqual(reader.headers[0].groupID, header.groupID)
 		XCTAssertEqual(reader.headers[0].mode, header.mode)
