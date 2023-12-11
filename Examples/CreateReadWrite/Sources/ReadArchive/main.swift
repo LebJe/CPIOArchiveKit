@@ -1,4 +1,4 @@
-// Copyright (c) 2021 Jeff Lebrun
+// Copyright (c) 2023 Jeff Lebrun
 //
 //  Licensed under the MIT License.
 //
@@ -67,9 +67,16 @@ Reads the archive at `file` and prints information about each file in the archiv
 -h, --help, -?             Prints this message.
 -p                         Print the contents of the files in the archive.
 -b                         Print the binary representation of the files in the archive.
--w <value> (defalut: \(width))   The amount of characters shown horizontally when printing the contents of a file in binary or ASCII/Unicode.
--a <value> (default: \(amountOfBytes))   The amount of characters/bytes you want print from each file in the archive. Use \"-1\" (with the quotes) to print the full file. If the number is greater than the amount of bytes in the file, then it will equal the amount of bytes in the file.
--f <value> (default: \(format.rawValue))  The format you want the file to be printed in. you can choose either \(Format.binary.rawValue) or \(Format.hexadecimal.rawValue).
+-w <value> (default: \(
+	width
+))   The amount of characters shown horizontally when printing the contents of a file in binary or ASCII/Unicode.
+-a <value> (default: \(
+	amountOfBytes
+))   The amount of characters/bytes you want print from each file in the archive. Use \"-1\" (with the quotes) to print the full file. If the number is greater than the amount of bytes in the file, then it will equal the amount of bytes in the file.
+-f <value> (default: \(format.rawValue))  The format you want the file to be printed in. you can choose either \(
+	Format
+		.binary.rawValue
+) or \(Format.hexadecimal.rawValue).
 """
 
 func parseArgs() {
@@ -153,38 +160,38 @@ func main() throws {
 	read(fpNumber, buf.baseAddress, buf.count)
 
 	let bytes = Array(buf.bindMemory(to: UInt8.self))
-	let reader = try CPIOArchiveReader(archive: bytes)
+	let archive = try CPIOArchive(data: bytes)
 
-	for (header, file) in reader {
+	for file in archive.files {
 		print("---------------------------")
 
-		print("Name: " + header.name)
-		print("User ID: " + String(header.userID))
-		print("Group ID: " + String(header.groupID))
-		print("Links: " + String(header.links))
-		print("Inode: " + (header.inode != nil ? String(header.inode!) : "No Inode"))
+		print("Name: " + file.header.name)
+		print("User ID: " + String(file.header.userID))
+		print("Group ID: " + String(file.header.groupID))
+		print("Links: " + String(file.header.links))
+		print("Inode: " + (file.header.inode != nil ? String(file.header.inode!) : "No Inode"))
 
-		print("Dev (major): " + (header.dev.major != nil ? String(header.dev.major!) : "No Dev"))
-		print("Dev (minor): " + (header.dev.minor != nil ? String(header.dev.minor!) : "No Dev"))
-		print("rDev (major): " + String(header.rDev.major))
-		print("rDev (minor): " + String(header.rDev.minor))
+		print("Dev (major): " + (file.header.dev.major != nil ? String(file.header.dev.major!) : "No Dev"))
+		print("Dev (minor): " + (file.header.dev.minor != nil ? String(file.header.dev.minor!) : "No Dev"))
+		print("rDev (major): " + String(file.header.rDev.major))
+		print("rDev (minor): " + String(file.header.rDev.minor))
 
-		print("File Permissions (In Octal): " + String(header.mode.permissions, radix: 8))
-		print("File Type: " + description(of: header.mode))
-		print("File Size: " + String(header.size))
-		print("File Modification Time: " + String(header.modificationTime))
+		print("File Permissions (In Octal): " + String(file.header.mode.permissions, radix: 8))
+		print("File Type: " + description(of: file.header.mode))
+		print("File Size: " + String(file.header.size))
+		print("File Modification Time: " + String(file.header.modificationTime))
 
-		if let c = header.checksum {
+		if let c = file.header.checksum {
 			print("Checksum (In Hexadecimal): 0x" + String(c.sum, radix: 16, uppercase: true))
 		}
 
 		if shouldPrintFile {
 			print("Contents:\n")
 			if amountOfBytes != -1 {
-				amountOfBytes = amountOfBytes > file.count ? file.count : amountOfBytes
-				printContents(from: Array(file[0..<amountOfBytes]))
+				amountOfBytes = amountOfBytes > file.contents.count ? file.contents.count : amountOfBytes
+				printContents(from: Array(file.contents[0..<amountOfBytes]))
 			} else {
-				printContents(from: file)
+				printContents(from: file.contents)
 			}
 		}
 	}
@@ -192,10 +199,10 @@ func main() throws {
 	print("---------------------------")
 }
 
-func description(of mode: FileMode) -> String {
+func description(of mode: CPIOFileMode) -> String {
 	var descriptions: [String] = []
 
-	for type in FileType.allCases {
+	for type in CPIOFileType.allCases {
 		if mode.is(type) {
 			if let d = description(of: type) {
 				descriptions.append(d)
@@ -216,6 +223,6 @@ do {
 	fputs("The archive \"\(CommandLine.arguments[1])\" is invalid.", stderr)
 	exit(ExitCode.cpioParserError.rawValue)
 } catch {
-	fputs("An error occured: \(error)", stderr)
+	fputs("An error occurred: \(error)", stderr)
 	exit(ExitCode.otherError.rawValue)
 }

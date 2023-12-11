@@ -1,4 +1,4 @@
-// Copyright (c) 2021 Jeff Lebrun
+// Copyright (c) 2023 Jeff Lebrun
 //
 //  Licensed under the MIT License.
 //
@@ -24,7 +24,7 @@ enum ExitCode: Int32 {
 enum ExtractorError: Error {
 	case invalidArgument(arg: String)
 	case unableToMakeDirectory(directory: String)
-	case unsupportedFileType(type: FileType?)
+	case unsupportedFileType(type: CPIOFileType?)
 	case unableToCreateFile(path: String)
 	case unableToWriteFile(path: String)
 
@@ -92,14 +92,14 @@ func main() throws {
 
 	read(fpNumber, buf.baseAddress, buf.count)
 
-	let reader = try CPIOArchiveReader(archive: Array(buf.bindMemory(to: UInt8.self)))
+	let archive = try CPIOArchive(data: Array(buf.bindMemory(to: UInt8.self)))
 
-	for (header, data) in reader {
-		switch header.mode.type {
+	for file in archive.files {
+		switch file.header.mode.type {
 			case .regular:
 				// The file is inside one or more directories.
-				if header.name.contains("/") {
-					var name = header.name
+				if file.header.name.contains("/") {
+					var name = file.header.name
 
 					// Remove "./" from the name.
 					if name.starts(with: [".", "/"]) {
@@ -110,27 +110,38 @@ func main() throws {
 					// Check if the directories leading up to this file exists. if they don't, then create them.
 					let statPointer = UnsafeMutablePointer<stat>.allocate(capacity: 1)
 					if stat(name, statPointer) == -1 {
-						try makeDirectoryRecursive(path: name, mode: header.mode.permissions, chmodMode: mode_t(header.mode.rawType))
+						try makeDirectoryRecursive(
+							path: name,
+							mode: file.header.mode.permissions,
+							chmodMode: mode_t(file.header.mode.rawType)
+						)
 					}
 				}
 
-				guard let fp = fopen(header.name, "wb") else {
-					throw ExtractorError.unableToCreateFile(path: header.name)
+				guard let fp = fopen(file.header.name, "wb") else {
+					throw ExtractorError.unableToCreateFile(path: file.header.name)
 				}
 
-				if data.withUnsafeBytes({ write(fileno(fp), $0.baseAddress!, data.count) }) != -1, chmod(header.name, mode_t(header.mode.permissions)) == 0, fclose(fp) == 0 {
-					print("Successfully wrote \"\(header.name)\"!")
+				if file.contents.withUnsafeBytes({ write(fileno(fp), $0.baseAddress!, file.contents.count) }) != -1, chmod(
+					file.header.name,
+					mode_t(file.header.mode.permissions)
+				) == 0, fclose(fp) == 0 {
+					print("Successfully wrote \"\(file.header.name)\"!")
 				} else {
-					throw ExtractorError.unableToWriteFile(path: header.name)
+					throw ExtractorError.unableToWriteFile(path: file.header.name)
 				}
 
 			case .directory:
-				try makeDirectoryRecursive(path: header.name, mode: header.mode.permissions, chmodMode: mode_t(header.mode.permissions))
-				print("Made directory \"\(header.name)\".")
+				try makeDirectoryRecursive(
+					path: file.header.name,
+					mode: file.header.mode.permissions,
+					chmodMode: mode_t(file.header.mode.permissions)
+				)
+				print("Made directory \"\(file.header.name)\".")
 
 			case .symlink: break // TODO: Support Symbolic Links.
 			case .none: throw ExtractorError.unsupportedFileType(type: nil)
-			default: throw ExtractorError.unsupportedFileType(type: header.mode.type)
+			default: throw ExtractorError.unsupportedFileType(type: file.header.mode.type)
 		}
 	}
 }

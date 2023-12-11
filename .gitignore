@@ -8,3 +8,6 @@ Package.resolved
 Brewfile.lock.json
 Examples/CreateReadWrite/.swiftpm
 Examples/CreateReadWrite/.build
+.vscode
+node_modules
+docs

@@ -7,8 +7,9 @@ repos:
           - id: "swift-format"
             name: "Format Swift"
     - repo: "https://github.com/pre-commit/mirrors-prettier"
-      rev: "4309ae0bc8b9f39c207bca9c5040ec8a35561a41"
+      rev: "v4.0.0-alpha.4"
       hooks:
           - id: "prettier"
             name: "Format Markdown"
             tags: ["md"]
+            exclude: "Sources/CPIOArchiveKit/CPIOArchiveKit.docc/"

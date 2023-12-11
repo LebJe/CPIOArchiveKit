@@ -1,12 +1,12 @@
-// Copyright (c) 2021 Jeff Lebrun
+// Copyright (c) 2023 Jeff Lebrun
 //
 //  Licensed under the MIT License.
 //
 //  The full text of the license can be found in the file named LICENSE.
 
-import enum CPIOArchiveKit.FileType
+import enum CPIOArchiveKit.CPIOFileType
 
-public func description(of type: FileType?) -> String? {
+public func description(of type: CPIOFileType?) -> String? {
 	switch type {
 		case .setUID: break
 		case .setGID: break
