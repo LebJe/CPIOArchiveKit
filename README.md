@@ -21,13 +21,11 @@
         -   [Writing Archives](#writing-archives)
             -   [Checksums](#checksums)
                 -   [Computed Checksum](#computed-checksum)
-                -   [Pre-computed Checksum](#pre-computed-checksum)
+                -   [Pre\-computed Checksum](#pre-computed-checksum)
         -   [Reading Archives](#reading-archives)
-            -   [Iteration](#iteration)
-            -   [Subscript](#subscript)
-            -   [CPIOFileMode](#CPIOFileMode)
-                -   [File Type](#file-type)
-                -   [Permissions](#permissions)
+            -   [CPIOFileMode](#cpiofilemode)
+            -   [File Type](#file-type)
+            -   [Permissions](#permissions)
     -   [Examples](#examples)
     -   [Other Platforms](#other-platforms)
         -   [Windows](#windows)
@@ -37,7 +35,7 @@
 
 <!--te-->
 
-Created by [gh-md-toc](https://github.com/ekalinin/github-markdown-toc)
+Created by [gh-md-toc](https://github.com/ekalinin/github-markdown-toc.go)
 
 Documentation is available [here](https://lebje.github.io/CPIOArchiveKit/documentation/cpioarchivekit/).
 
