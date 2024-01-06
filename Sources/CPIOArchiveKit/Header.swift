@@ -1,15 +1,17 @@
-// Copyright (c) 2023 Jeff Lebrun
+// Copyright (c) 2024 Jeff Lebrun
 //
 //  Licensed under the MIT License.
 //
 //  The full text of the license can be found in the file named LICENSE.
+
+import ArchiveTypes
 
 public extension CPIOArchive {
 	/// The `cpio` header.
 	///
 	/// This header is placed directly before the contents of a file in the archive to
 	/// provide information such as the size of the file, the file's name, it's permissions, etc.
-	struct Header: Codable, Equatable {
+	struct Header: Codable, Equatable, ArchiveHeader {
 		/// The file's name.
 		public internal(set) var name: String
 

@@ -1,3 +1,10 @@
+// Copyright (c) 2024 Jeff Lebrun
+//
+//  Licensed under the MIT License.
+//
+//  The full text of the license can be found in the file named LICENSE.
+
+import ArchiveTypes
 
 /// CPIOArchive reads, creates, and edits CPIO archives.
 ///
@@ -48,14 +55,27 @@
 ///
 /// try Data(bytes).write(to: URL(fileURLWithPath: "myArchive.cpio"))
 /// ```
-public struct CPIOArchive {
+///
+/// #### Symlinks
+/// Add a symlink by setting `CPIOArchive/Header/name` to the name you want the symlink to have, and
+/// `CPIOArchive/File/contents` to the name of the
+/// file you want to link to.
+public struct CPIOArchive: Archive {
+	public typealias ArchiveError = CPIOArchiveError
+	public typealias ArchiveType = CPIOArchiveType
+
 	/// An array of all the files in the archive.
-	public var files: [Self.File] = []
+	public var files: [File]
 
-	public var archiveType: CPIOArchiveType
+	public let archiveType: CPIOArchiveType
 
-	/// Create a new archive.
-	public init(archiveType: CPIOArchiveType = .svr4, _ files: [Self.File] = []) {
+	// public init(archiveType: CPIOArchiveType, _ files: [File]) {
+	// 	self.archiveType = archiveType
+	// 	self.files = files
+	// }
+
+	public init(archiveType: CPIOArchiveType = .svr4, _ files: [File] = []) {
+		// self.init(archiveType: archiveType, files)
 		self.archiveType = archiveType
 		self.files = files
 	}
@@ -70,29 +90,13 @@ public struct CPIOArchive {
 	}
 
 	/// Generates a CPIO archive from ``CPIOArchive/files``.
-	public func serialize() -> [UInt8] {
-		var writer = Self.CPIOArchiveWriter(type: self.archiveType)
-		self.files.forEach({ writer.addFile(header: $0.header, contents: $0.contents) })
-		return writer.finalize()
-	}
-
-	/// Represents a file stored in a CPIO archive.
-	public struct File {
-		/// The ``CPIOArchive/Header`` describing the file.
-		public let header: Header
-
-		/// The contents of the file.
-		public let contents: [UInt8]
-
-		public init(header: Header, contents: [UInt8] = []) {
-			self.header = header
-			self.contents = contents
-		}
-
-		/// Convenience initializer to create a file from a `String`.
-		public init(header: Header, contents: String) {
-			self.header = header
-			self.contents = contents.utf8Array
-		}
+	///
+	/// - Parameter type: Use this parameter to generate an archive of a different type than ``CPIOArchive/archiveType``.
+	/// Leave `nil` to use ``CPIOArchive/archiveType``.
+	/// - Returns: The generated archive.
+	public func serialize(as type: CPIOArchiveType? = nil) -> [UInt8] {
+		var writer = Self.CPIOArchiveWriter(type: type ?? self.archiveType)
+		writer.files = self.files
+		return writer.serialize()
 	}
 }

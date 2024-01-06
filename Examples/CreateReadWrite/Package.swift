@@ -11,39 +11,42 @@ let package = Package(
 		.executable(name: "extract", targets: ["ExtractArchive"]),
 		.executable(name: "chksum", targets: ["ComputeChecksum"]),
 	],
-	dependencies: [.package(name: "CPIOArchiveKit", path: "../../")],
+	dependencies: [.package(name: "ArchiveKit", path: "../../")],
 	targets: [
 		.target(
 			name: "Utilities",
 			dependencies: [
-				.product(name: "CPIOArchiveKit", package: "CPIOArchiveKit"),
+				.product(name: "CPIOArchiveKit", package: "ArchiveKit"),
 			]
 		),
 		.target(
 			name: "CreateArchive",
 			dependencies: [
 				"Utilities",
-				.product(name: "CPIOArchiveKit", package: "CPIOArchiveKit"),
+				.product(name: "CPIOArchiveKit", package: "ArchiveKit"),
+				.product(name: "ArArchiveKit", package: "ArchiveKit"),
 			]
 		),
 		.target(
 			name: "ReadArchive",
 			dependencies: [
 				"Utilities",
-				.product(name: "CPIOArchiveKit", package: "CPIOArchiveKit"),
+				.product(name: "CPIOArchiveKit", package: "ArchiveKit"),
+				.product(name: "ArArchiveKit", package: "ArchiveKit"),
 			]
 		),
 		.target(
 			name: "ExtractArchive",
 			dependencies: [
 				"Utilities",
-				.product(name: "CPIOArchiveKit", package: "CPIOArchiveKit"),
+				.product(name: "CPIOArchiveKit", package: "ArchiveKit"),
+				.product(name: "ArArchiveKit", package: "ArchiveKit"),
 			]
 		),
 		.target(
 			name: "ComputeChecksum",
 			dependencies: [
-				.product(name: "CPIOArchiveKit", package: "CPIOArchiveKit"),
+				.product(name: "CPIOArchiveKit", package: "ArchiveKit"),
 			]
 		),
 	]

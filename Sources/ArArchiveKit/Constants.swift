@@ -4,9 +4,9 @@
 //
 //  The full text of the license can be found in the file named LICENSE.
 
-infix operator &^
+enum Constants {
+	/// The file signature placed atop an `ar` archive.
+	static let globalHeader = "!<arch>\n"
 
-/// Bitwise AND NOT.
-func &^ <T: FixedWidthInteger>(lhs: T, rhs: T) -> T {
-	lhs & ~rhs
+	static let headerSize = 60
 }

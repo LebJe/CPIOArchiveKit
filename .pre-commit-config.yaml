@@ -12,4 +12,4 @@ repos:
           - id: "prettier"
             name: "Format Markdown"
             tags: ["md"]
-            exclude: "Sources/CPIOArchiveKit/CPIOArchiveKit.docc/"
+            exclude: "Sources/CPIOArchiveKit/CPIOArchiveKit.docc/|Sources/ArArchiveKit/ArArchiveKit.docc/"

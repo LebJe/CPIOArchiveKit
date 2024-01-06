@@ -17,7 +17,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 -   Merged `CPIOArchiveReader/Writer` into `CPIOArchive`
 -   `Header` is nested under `CPIOArchive` (`CPIOArchive.Header`)
--   Update to Swift 5.5
+-   Merged `ArArchiveReader/Writer` into `ArArchive`
+-   `Header` is nested under `ArArchive` (`ArArchive.Header`)
+-   Adding files is done by appending a `CPIOArchive/ArArchive.File` to the `files` property of `CPIOArchive/ArArchive`.
+-   Updated to Swift 5.5
+-   Merged ArArchiveKit into ArchiveKit
+-   Renamed package from CPIOArchiveKit to ArchiveKit, because ArArchiveKit and CPIOArchiveKit are now on the same package.
 
 #### Renamed
 

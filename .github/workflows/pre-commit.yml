@@ -1,6 +1,9 @@
 name: "Run Pre-Commit"
 
-on: "pull_request"
+on:
+    push:
+        branches:
+            - "main"
 
 jobs:
     PreCommit:
