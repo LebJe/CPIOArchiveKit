@@ -5,6 +5,31 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.2.0](https://github.com/LebJe/CPIOArchiveKit/releases/tag/0.2.0) - 2023-12-10
+
+### Added
+
+-   `CPIOArchiveType.svr4WithCRC`
+-   `CPIOArchiveError.missingOrInvalidChecksum(CPIOArchive.Header)`
+-   DocC documentation
+
+### Changed
+
+-   Merged `CPIOArchiveReader/Writer` into `CPIOArchive`
+-   `Header` is nested under `CPIOArchive` (`CPIOArchive.Header`)
+-   Merged `ArArchiveReader/Writer` into `ArArchive`
+-   `Header` is nested under `ArArchive` (`ArArchive.Header`)
+-   Adding files is done by appending a `CPIOArchive/ArArchive.File` to the `files` property of `CPIOArchive/ArArchive`.
+-   Updated to Swift 5.5
+-   Merged ArArchiveKit into ArchiveKit
+-   Renamed package from CPIOArchiveKit to ArchiveKit, because ArArchiveKit and CPIOArchiveKit are now on the same package.
+
+#### Renamed
+
+-   `FileMode` -> `CPIOFileMode`
+-   `FileType` -> `CPIOFileType`
+-   `
+
 ## [0.1.0](https://github.com/LebJe/CPIOArchiveKit/releases/tag/0.1.0) - 2021-07-21
 
 ### Added

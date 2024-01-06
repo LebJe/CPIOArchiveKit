@@ -1,4 +1,4 @@
-// Copyright (c) 2021 Jeff Lebrun
+// Copyright (c) 2024 Jeff Lebrun
 //
 //  Licensed under the MIT License.
 //
@@ -18,18 +18,21 @@ enum ItemType {
 	case file, dir, symlink
 }
 
-let usage = "USAGE: \(CommandLine.arguments[0]) [--help, -h, -?] <files...>\n\nCreate a cpio archive from a list of files and/or directories."
+let usage =
+	"USAGE: \(CommandLine.arguments[0]) [--help, -h, -?] <files...>\n\nCreate a cpio archive from a list of files and/or directories."
 
 if CommandLine.argc == 1 {
 	print(usage)
 	exit(1)
-} else if CommandLine.arguments.contains("-h") || CommandLine.arguments.contains("-?") || CommandLine.arguments.contains("--help") {
+} else if CommandLine.arguments.contains("-h") || CommandLine.arguments.contains("-?") || CommandLine.arguments
+	.contains("--help")
+{
 	print(usage)
 	exit(0)
 }
 
 let items = Array(CommandLine.arguments.dropFirst())
-var writer = CPIOArchiveWriter()
+var archive = CPIOArchive()
 
 for item in items {
 	// Open `item`.
@@ -88,49 +91,54 @@ for item in items {
 
 	switch type {
 		case .file:
-			writer.addFile(
-				header: Header(
-					name: item,
-					userID: Int(stat.st_uid),
-					groupID: Int(stat.st_gid),
-					mode: FileMode(UInt32(stat.st_mode), modes: [.regular, .setUID, .setGID]),
-					modificationTime: Int(statTime),
-					inode: Int(stat.st_ino),
-					links: Int(stat.st_nlink),
-					dev: (major: Int(stat.st_dev & 0xFF), minor: Int(stat.st_dev >> 8 & 0xFF)),
-					rDev: (major: Int(stat.st_rdev & 0xFF), minor: Int(stat.st_rdev >> 8 & 0xFF))
-				),
-				contents: bytes
+			archive.files.append(
+				.init(
+					header: CPIOArchive.Header(
+						name: item,
+						userID: Int(stat.st_uid),
+						groupID: Int(stat.st_gid),
+						mode: CPIOFileMode(UInt32(stat.st_mode), modes: [.regular, .setUID, .setGID]),
+						modificationTime: Int(statTime),
+						inode: Int(stat.st_ino),
+						links: Int(stat.st_nlink),
+						dev: (major: Int(stat.st_dev & 0xFF), minor: Int(stat.st_dev >> 8 & 0xFF)),
+						rDev: (major: Int(stat.st_rdev & 0xFF), minor: Int(stat.st_rdev >> 8 & 0xFF))
+					),
+					contents: bytes
+				)
 			)
 		case .dir:
-			writer.addFile(
-				header: Header(
-					name: item,
-					userID: Int(stat.st_uid),
-					groupID: Int(stat.st_gid),
-					mode: FileMode(UInt32(stat.st_mode), modes: [.directory, .setUID, .setGID]),
-					modificationTime: Int(statTime),
-					inode: Int(stat.st_ino),
-					links: Int(stat.st_nlink),
-					dev: (major: Int(stat.st_dev & 0xFF), minor: Int(stat.st_dev >> 8 & 0xFF)),
-					rDev: (major: Int(stat.st_rdev & 0xFF), minor: Int(stat.st_rdev >> 8 & 0xFF))
-				),
-				contents: []
+			archive.files.append(
+				.init(
+					header: CPIOArchive.Header(
+						name: item,
+						userID: Int(stat.st_uid),
+						groupID: Int(stat.st_gid),
+						mode: CPIOFileMode(UInt32(stat.st_mode), modes: [.directory, .setUID, .setGID]),
+						modificationTime: Int(statTime),
+						inode: Int(stat.st_ino),
+						links: Int(stat.st_nlink),
+						dev: (major: Int(stat.st_dev & 0xFF), minor: Int(stat.st_dev >> 8 & 0xFF)),
+						rDev: (major: Int(stat.st_rdev & 0xFF), minor: Int(stat.st_rdev >> 8 & 0xFF))
+					)
+				)
 			)
 		case .symlink:
-			writer.addFile(
-				header: Header(
-					name: item,
-					userID: Int(stat.st_uid),
-					groupID: Int(stat.st_gid),
-					mode: FileMode(UInt32(stat.st_mode), modes: [.symlink, .setUID, .setGID]),
-					modificationTime: Int(statTime),
-					inode: Int(stat.st_ino),
-					links: Int(stat.st_nlink),
-					dev: (major: Int(stat.st_dev & 0xFF), minor: Int(stat.st_dev >> 8 & 0xFF)),
-					rDev: (major: Int(stat.st_rdev & 0xFF), minor: Int(stat.st_rdev >> 8 & 0xFF))
-				),
-				contents: bytes
+			archive.files.append(
+				.init(
+					header: CPIOArchive.Header(
+						name: item,
+						userID: Int(stat.st_uid),
+						groupID: Int(stat.st_gid),
+						mode: CPIOFileMode(UInt32(stat.st_mode), modes: [.symlink, .setUID, .setGID]),
+						modificationTime: Int(statTime),
+						inode: Int(stat.st_ino),
+						links: Int(stat.st_nlink),
+						dev: (major: Int(stat.st_dev & 0xFF), minor: Int(stat.st_dev >> 8 & 0xFF)),
+						rDev: (major: Int(stat.st_rdev & 0xFF), minor: Int(stat.st_rdev >> 8 & 0xFF))
+					),
+					contents: bytes
+				)
 			)
 	}
 
@@ -142,7 +150,7 @@ guard let fp = fopen("output.cpio", "wb") else {
 	exit(4)
 }
 
-let bytes = writer.finalize()
+let bytes = archive.serialize()
 
 if bytes.withUnsafeBytes({ write(fileno(fp), $0.baseAddress!, bytes.count) }) != -1 {
 	print("Successfully wrote output.cpio!")

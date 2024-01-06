@@ -6,5 +6,10 @@ xcuserdata/
 /.swiftpm
 Package.resolved
 Brewfile.lock.json
+Sources/CPIOArchiveKit/CPIOArchiveKit.docc/.docc-build
+Sources/ArArchiveKit/ArArchiveKit.docc/.docc-build
 Examples/CreateReadWrite/.swiftpm
 Examples/CreateReadWrite/.build
+.vscode
+node_modules
+docs

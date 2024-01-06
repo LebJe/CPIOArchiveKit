@@ -1,9 +1,9 @@
-// swift-tools-version:5.3
+// swift-tools-version:5.5
 
 import PackageDescription
 
 let package = Package(
-	name: "CPIOArchiveKit",
+	name: "ArchiveKit",
 	platforms: [
 		.macOS(.v10_15),
 		.iOS(.v13),
@@ -15,16 +15,30 @@ let package = Package(
 			name: "CPIOArchiveKit",
 			targets: ["CPIOArchiveKit"]
 		),
+		.library(
+			name: "ArArchiveKit",
+			targets: ["ArArchiveKit"]
+		),
 	],
 	dependencies: [],
 	targets: [
 		.target(
 			name: "CPIOArchiveKit",
-			dependencies: []
+			dependencies: ["ArchiveTypes"]
 		),
+		.target(
+			name: "ArArchiveKit",
+			dependencies: ["ArchiveTypes"]
+		),
+		.target(name: "ArchiveTypes"),
 		.testTarget(
 			name: "CPIOArchiveKitTests",
 			dependencies: ["CPIOArchiveKit"],
+			resources: [.copy("test-files/")]
+		),
+		.testTarget(
+			name: "ArArchiveKitTests",
+			dependencies: ["ArArchiveKit"],
 			resources: [.copy("test-files/")]
 		),
 	]
